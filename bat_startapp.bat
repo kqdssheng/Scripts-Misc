@@ -1,12 +1,13 @@
 @echo off
 setlocal enabledelayedexpansion
-::batÃüÁîÊ¹ÓÃ¸ñÊ½£¬startapp.bat type path
+::batå‘½ä»¤ä½¿ç”¨æ ¼å¼ï¼Œstartapp.bat type path
+::æ³¨æ„ç¼–ç æ–¹å¼ä¸º ANSI æˆ– GB2312 å¦åˆ™è„šæœ¬å¯èƒ½æ— æ³•è¿è¡Œã€‚
 
 set type=%1
 ::set length=0
 set arguments=%*
 
-::ÒÔÑ­»·µÄ·½Ê½½«²ÎÊıÖĞ°üº¬µÄtypeÀàĞÍ×Ö´®È¥³ı£¬Ë³±ãÒ²¿É¼ÆËãlengthµÄ³¤¶È¡£echo %length%
+::ä»¥å¾ªç¯çš„æ–¹å¼å°†å‚æ•°ä¸­åŒ…å«çš„typeç±»å‹å­—ä¸²å»é™¤ï¼Œé¡ºä¾¿ä¹Ÿå¯è®¡ç®—lengthçš„é•¿åº¦ã€‚echo %length%
 :loop
 if defined type (
     set type=%type:~1%
@@ -26,54 +27,54 @@ set go="C:\Users\28419\Desktop\kali-tool\bin\go\bin\go.exe"
 
 set readme="C:\Users\28419\Desktop\kali-tool\README.txt"
 
-::exeÓ¦ÓÃÆô¶¯
+::exeåº”ç”¨å¯åŠ¨
 if "%1" == "exe" (
 %arguments%
 exit
 )
 
-::python2Ó¦ÓÃÆô¶¯
+::python2åº”ç”¨å¯åŠ¨
 if "%1" == "py2" (
 %py2% %arguments%
 exit
 )
 
-::python3Ó¦ÓÃÆô¶¯
+::python3åº”ç”¨å¯åŠ¨
 if "%1" == "py3" (
 %py3% %arguments%
 exit
 )
 
-::pip3Ó¦ÓÃÆô¶¯
+::pip3åº”ç”¨å¯åŠ¨
 if "%1" == "pip3" (
 %pip3% %arguments%
 exit
 )
 
-::jdk8Ó¦ÓÃÆô¶¯
+::jdk8åº”ç”¨å¯åŠ¨
 if "%1" == "jdk8" (
 %jdk8% %arguments%
 exit
 )
 
-::jdk17Ó¦ÓÃÆô¶¯
+::jdk17åº”ç”¨å¯åŠ¨
 if "%1" == "jdk17" (
 %jdk17% %arguments%
 exit
 )
 
-::jdk20Ó¦ÓÃÆô¶¯
+::jdk20åº”ç”¨å¯åŠ¨
 if "%1" == "jdk20" (
 %jdk20% %arguments%
 exit
 )
 
-::goÓ¦ÓÃÆô¶¯
+::goåº”ç”¨å¯åŠ¨
 if "%1" == "go" (
 %go% %arguments%
 exit
 )
 
 type %readme%
-echo ¸ñÊ½´íÎó»ò²»Ö§³Ö£¬Çë°´ÕÕÒÔÏÂ¸ñÊ½Ö´ĞĞ:
+echo æ ¼å¼é”™è¯¯æˆ–ä¸æ”¯æŒï¼Œè¯·æŒ‰ç…§ä»¥ä¸‹æ ¼å¼æ‰§è¡Œ:
 echo "startapp.bat [exe|py2|py3|pip3|jdk8|jdk17|jdk20|go] [option] app_path"
