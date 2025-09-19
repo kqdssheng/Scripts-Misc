@@ -6,6 +6,7 @@ proxy_port=7890
 # 要安装的基本命令和扩展命令列表
 base_cmd="git zsh"
 extend_cmd="tealdeer fzf thefuck trash-cli locate"
+docker_pkgs="docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
 
 # 颜色和格式设置
 FMT_RED=$(printf '\033[31m')
@@ -86,6 +87,8 @@ omz_install() {
 
     sed -i '/^RUNZSH/s/yes/no/' /tmp/install.sh
     sh /tmp/install.sh
+    # 创建 zsh 自定义补全命令参数的目录【注：后续有新的补全命令需要添加直接放这即可】
+    mkdir -p ~/.oh-my-zsh/custom/completions
 
     echo "${FMT_GREEN}ohmyzsh 安装完毕,接下来开始安装 zsh-autosuggestions 插件...${FMT_RESET}"
     sleep 1
@@ -119,11 +122,72 @@ alias ohmyzsh="cd ~/.oh-my-zsh"\
     echo "${FMT_GREEN}tldr 插件配置完毕${FMT_RESET}"
 }
 
+# Docker 安装
+docker_install(){
+    wget -q -O /tmp/install-docker.sh https://get.docker.com/
+    if [ $? -ne 0 ]; then
+        echo "${FMT_RED}Docker 安装脚本下载失败，请检查网络。${FMT_RESET}"
+        exit
+    fi
+    
+    grep -i kali /etc/*release >/dev/null
+    if [ $? -eq 0 ]; then
+        sed -i '/apt_repo=/s/$dist_version/buster/' /tmp/install-docker.sh
+    fi
+
+    if yes_or_no "是否自定义安装 Docker 组件，还是使用默认设置？【第一次建议使用默认安装方式n，若不成功第二次再使用自定义安装放肆y】" ; then
+        echo "${FMT_GREEN}正在配置 Docker 自定义组件...${FMT_RESET}"
+        sleep 1
+        #该处会修改 docker 安装脚本中 echo_docker_as_nonroot 字串的前两行处添加一个 pkgs 变量定义行
+        sed -i "/apt-get.*pkgs/i pkgs='$docker_pkgs'" /tmp/install-docker.sh
+        sed -i "/pkg_manager.*pkgs/i pkgs='$docker_pkgs'" /tmp/install-docker.sh
+        echo "${FMT_GREEN}Docker 自定义组件配置完毕${FMT_RESET}"
+    fi
+
+    echo "${FMT_GREEN}正在安装 Docker...${FMT_RESET}"
+    sleep 1
+    if [ "$(command -v sudo)" ]; then
+        sudo sh /tmp/install-docker.sh --mirror Aliyun
+        #sudo usermod -aG docker $USER
+    else
+        sh /tmp/install-docker.sh --mirror Aliyun
+        #usermod -aG docker $USER
+    fi
+    echo "${FMT_GREEN}Docker 安装完毕${FMT_RESET}"
+}
+
+# 其他工具下载
+tools_download() {
+    mkdir -p ~/tools;cd ~/tools
+
+    # 下载 chsrc 工具
+    echo "${FMT_GREEN}正在下载 chsrc 工具...${FMT_RESET}"
+    sleep 1
+    wget https://gitee.com/RubyMetric/chsrc/releases/download/pre/chsrc-x64-linux -O chsrc; chmod +x ./chsrc
+    echo "${FMT_GREEN}chsrc 工具下载完毕${FMT_RESET}"
+
+    # 拉取 clash-for-linux 工具
+    echo "${FMT_GREEN}正在拉取 clash-for-linux 工具...${FMT_RESET}"
+    sleep 1
+    git clone https://github.com/wnlen/clash-for-linux
+    echo "${FMT_GREEN}clash-for-linux 工具拉取完毕${FMT_RESET}"
+
+    # 下载 vfox 工具【单文件至 /user/local/bin 目录】
+    echo "${FMT_GREEN}正在安装 vfox 工具...${FMT_RESET}"
+    sleep 1
+    curl -sSL https://raw.githubusercontent.com/version-fox/vfox/main/install.sh | bash
+    echo "${FMT_GREEN}vfox 工具安装完毕${FMT_RESET}"
+}
+
 # 主程序
 main() {
     network_check
     yes_or_no "是否继续安装 ohmyzsh ？" && omz_install || echo "用户取消安装 ohmyzsh。"
     sleep 1
+    yes_or_no "是否继续安装 Docker ？" && docker_install || echo "用户取消安装 Docker。"
+    sleep 1
+    yes_or_no "是否继续下载其他常用工具 ？" && tools_download || echo "用户取消下载其他常用工具。"
+    sleep
     echo "${FMT_GREEN}所有工具安装和配置完毕，请重启终端或运行 'source ~/.zshrc' 以应用更改。${FMT_RESET}"
 }
 
